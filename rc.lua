@@ -528,7 +528,10 @@ awful.rules.rules = {
     { rule = { class = "Gvim" },
        properties = {},
        callback=gvim_management },
-
+    { rule = { name = "Terminator Preferences" },
+       properties = { floating = true } },
+    { rule = { class = "Ghb" },
+       properties = { floating = true } },
 }
 -- }}}
 
