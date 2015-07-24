@@ -384,8 +384,8 @@ globalkeys = awful.util.table.join(
 --    awful.key({modkey, "Control"  }, "F8", function() awful.util.spawn("rhythmbox-client --previous --no-start") end, "Prev"),
 -- mpd conf
     awful.key({modkey, "Control"  }, "F9", function() awful.util.spawn("mpc toggle") end, "Play-Pause"),
-    awful.key({modkey, "Control"  }, "F10", function() awful.util.spawn("mpc next") end, "Next"),
-    awful.key({modkey, "Control"  }, "F8", function() awful.util.spawn("mpc prev") end, "Prev"),    
+    awful.key({modkey, "Control"  }, "F10", function() awful.util.spawn("mpc next") ; vicious.force({ mpdwidget }) end, "Next"),
+    awful.key({modkey, "Control"  }, "F8", function() awful.util.spawn("mpc prev") ; vicious.force({ mpdwidget }) end, "Prev"),    
 -- mouse controle
     keydoc.group("Mouse control"),
 
