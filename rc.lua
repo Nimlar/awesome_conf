@@ -182,6 +182,30 @@ vicious.register(mpdwidget, vicious.widgets.mpd,
             return args["{Artist}"]..' - '.. args["{Title}"]
         end
     end, 10)
+mpdwidget:buttons(awful.util.table.join(
+    awful.button({ }, 1, function()
+        awful.util.spawn("mpc seek -00:00:10")
+        vicious.force({ mpdwidget })
+    end),
+    awful.button({ }, 3, function()
+        awful.util.spawn("mpc seek +00:00:10")
+        vicious.force({ mpdwidget })
+    end),
+    awful.button({ }, 2, function()
+        awful.util.spawn("mpc toggle")
+        vicious.force({ mpdwidget })
+    end),
+
+    awful.button({ }, 4, function()
+        awful.util.spawn("mpc volume +5")
+        vicious.force({ mpdwidget })
+    end),
+    awful.button({ }, 5, function()
+        awful.util.spawn("mpc volume -5")
+        vicious.force({ mpdwidget })
+    end)
+))
+
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -375,17 +399,17 @@ globalkeys = awful.util.table.join(
 
     keydoc.group("Mine"),
     awful.key({ modkey, }, "F1", keydoc.display, "Display this help"),
-    awful.key({ altkey, "Control"  }, "l", function() awful.util.spawn("gnome-screensaver-command --lock") end,
-    "Lock screen"),
+    awful.key({ altkey, "Control"  }, "l", function() awful.util.spawn("mpc pause") ; awful.util.spawn("gnome-screensaver-command --lock") end,
+    "Lock screen (and pause music)"),
     keydoc.group("Music"),
 -- rythmbox configuration
 --    awful.key({modkey, "Control"  }, "F9", function() awful.util.spawn("rhythmbox-client --play-pause") end, "Play-Pause"),
 --    awful.key({modkey, "Control"  }, "F10", function() awful.util.spawn("rhythmbox-client --next --no-start") end, "Next"),
 --    awful.key({modkey, "Control"  }, "F8", function() awful.util.spawn("rhythmbox-client --previous --no-start") end, "Prev"),
 -- mpd conf
-    awful.key({modkey, "Control"  }, "F9", function() awful.util.spawn("mpc toggle") end, "Play-Pause"),
+    awful.key({modkey, "Control"  }, "F9", function() awful.util.spawn("mpc toggle") ; vicious.force({ mpdwidget }) end, "Play-Pause"),
     awful.key({modkey, "Control"  }, "F10", function() awful.util.spawn("mpc next") ; vicious.force({ mpdwidget }) end, "Next"),
-    awful.key({modkey, "Control"  }, "F8", function() awful.util.spawn("mpc prev") ; vicious.force({ mpdwidget }) end, "Prev"),    
+    awful.key({modkey, "Control"  }, "F8", function() awful.util.spawn("mpc prev") ; vicious.force({ mpdwidget }) end, "Prev"),
 -- mouse controle
     keydoc.group("Mouse control"),
 
