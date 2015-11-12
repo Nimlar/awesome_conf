@@ -207,6 +207,20 @@ mpdwidget:buttons(awful.util.table.join(
 ))
 
 
+-- {{{ pidgin widget
+pidgin_status = widget({ type = "textbox" })
+ pidgin_status.text = awful.util.pread("purple-remote \"getstatus\"")
+ pidgin_timer = timer({ timeout = 30 })
+ pidgin_timer:add_signal("timeout", function()
+     pidgin_status.text = awful.util.pread("purple-remote \"getstatus\"")
+ end)
+ pidgin_timer:start()
+-- }}}
+
+
+
+
+
 -- Create a wibox for each screen and add it
 mywibox = {}
 mypromptbox = {}
@@ -286,6 +300,8 @@ for s = 1, screen.count() do
 	(s == 2) and { fs.mh.widget,
                        fs.l.widget,
                        fs.r.widget,
+                       separator,
+                       pidgin_status,
                        separator,
                        layout = awful.widget.layout.horizontal.rightleft
                    } or nil,
