@@ -125,14 +125,14 @@ mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
 
 -- {{{ Wibox
 -- Create a textclock widget
-mytextclock = awful.widget.textclock({ align = "right" }, " | %a %b %d, %H:%M")
+mytextclock = awful.widget.textclock({ align = "right" }, "%a %b %d, %H:%M")
 -- Create a systray
 mysystray = widget({ type = "systray" })
 
 -- {{{ Reusable separator
 
---separator = widget({ type = "imagebox" })
---separator.image = image(beautiful.widget_sep)
+separator = widget({ type = "imagebox" })
+separator.image = image("/usr/share/icons/hicolor/16x16/apps/gnome-panel-separator.png")
 
 spacer = widget({ type = "textbox" })
 spacer.width = 3
@@ -281,13 +281,20 @@ for s = 1, screen.count() do
             mypromptbox[s],
             layout = awful.widget.layout.horizontal.leftright
         },
-        mylayoutbox[s],
-        mytextclock,
-	s == 2 and fs.mh.widget or nil,
-	s == 2 and fs.l.widget or nil,
-	s == 2 and fs.r.widget or nil,
-        s == 1 and mysystray or nil,
-        s == 1 and mpdwidget or nil,
+        mylayoutbox[s], separator,
+        mytextclock, separator,
+	(s == 2) and { fs.mh.widget,
+                       fs.l.widget,
+                       fs.r.widget,
+                       separator,
+                       layout = awful.widget.layout.horizontal.rightleft
+                   } or nil,
+        mysystray,
+        (s == 1) and {
+            mpdwidget,
+            separator,
+            layout = awful.widget.layout.horizontal.rightleft
+        }or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
     }
