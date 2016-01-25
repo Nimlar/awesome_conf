@@ -375,7 +375,27 @@ globalkeys = awful.util.table.join(
 
     -- Standard program
     keydoc.group("Standard program"),
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end, "Launch a terminal"),
+    awful.key({ modkey,           }, "Return",
+        function ()
+            local selection = selection()
+            local last = string.find(selection,"\n")
+            local dir
+            io.stderr:write("\n")
+            if last ~= nil then
+                dir = string.sub(selection,1,last):gsub("^%s*(.-)%s*$", "%1")
+            else
+                dir = selection
+            end
+            -- Echap/remove some 'magic' character
+            dir = dir:gsub("['\"]","")
+            io.stderr:write("  dir =" .. dir .. "\n")
+            local shell_cmd = 'if [ -d \'' .. dir .. '\' ] ; then ( ' .. terminal .. ' --working-directory=\'' .. dir .. '\' ) || ' .. terminal .. ' ; else  ' .. terminal .. ' ; fi'
+            io.stderr:write(shell_cmd)
+            io.stderr:write("\n")
+            awful.util.spawn_with_shell(shell_cmd)
+
+        end,
+        "Launch a terminal in selected directory or default if empty"),
     awful.key({ modkey, "Control" }, "r", awesome.restart, "Restart awesome"),
     awful.key({ modkey, "Control", altkey   }, "q", awesome.quit, "Quit awesome"),
 
