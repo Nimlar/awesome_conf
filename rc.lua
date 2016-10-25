@@ -305,12 +305,12 @@ for s = 1, screen.count() do
                        fs.l.widget,
                        fs.r.widget,
                        separator,
-                       pidgin_status,
-                       separator,
+-- no need with pidgin indicator                       pidgin_status,
+--                       separator,
                        layout = awful.widget.layout.horizontal.rightleft
                    } or nil,
-        mysystray,
         (s == 1) and {
+            mysystray,
             mpdwidget,
             separator,
             layout = awful.widget.layout.horizontal.rightleft
