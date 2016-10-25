@@ -379,7 +379,8 @@ globalkeys = awful.util.table.join(
 
     -- Standard program
     keydoc.group("Standard program"),
-    awful.key({ modkey,           }, "Return",
+    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end, "Launch a terminal"),
+    awful.key({ modkey, "Shift"   }, "Return",
         function ()
             local selection = selection()
             local last = string.find(selection,"\n")
@@ -393,7 +394,7 @@ globalkeys = awful.util.table.join(
             -- Echap/remove some 'magic' character
             dir = dir:gsub("['\"]","")
             io.stderr:write("  dir =" .. dir .. "\n")
-            local shell_cmd = 'if [ -d \'' .. dir .. '\' ] ; then ( ' .. terminal .. ' --working-directory=\'' .. dir .. '\' ) || ' .. terminal .. ' ; else  ' .. terminal .. ' ; fi'
+            local shell_cmd = 'if [ -d \"' .. dir .. '\" ] ; then ( exec ' .. terminal .. ' --working-directory=\'' .. dir .. '\' ) || exec ' .. terminal .. ' ; else  exec ' .. terminal .. ' ; fi'
             io.stderr:write(shell_cmd)
             io.stderr:write("\n")
             awful.util.spawn_with_shell(shell_cmd)
