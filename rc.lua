@@ -587,8 +587,8 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "Gimp" },
       properties = { floating = true } },
-    -- Set Firefox to always map on tags number 9 of screen 1.
-    { rule_any = { class = {"Firefox", "Chromium-browser" } },
+    -- Set browser to always map on tags number 9 of screen 1.
+    { rule_any = { class = {"Firefox", "Chromium-browser", "google-chrome", "google-chrome-beta" } },
        properties = { tag = tags[1][9] } },
     { rule_any = { class = {"Thunderbird", "Pidgin"} },
        properties = { tag = tags[2][9] } },
