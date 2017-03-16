@@ -119,7 +119,7 @@ end
    layout = { layouts[1], layouts[1], layouts[1], layouts[1], layouts[1],
               layouts[1], layouts[1], layouts[1], layouts[1] }
  },
- { names  = { "1", "2", "3", "4", "5", "6", "7", "8", "im" },
+ { names  = { "1", "2", "t32", "4", "5", "6", "7", "8", "im" },
    layout = { layouts[1], layouts[1], layouts[1], layouts[1], layouts[1],
               layouts[1], layouts[1], layouts[1], layouts[1] }
  },
@@ -636,6 +636,8 @@ awful.rules.rules = {
        properties = { floating = true } },
     { rule = { class = "Ghb" },
        properties = { floating = true } },
+    { rule = { class = "T32marm64-qt" },
+       properties = { tag = tags[2][3] } },
 }
 -- }}}
 
@@ -659,8 +661,12 @@ client.connect_signal("manage", function (c, startup)
     if not startup then
         -- Set the windows at the slave,
         -- i.e. put it at the end of others instead of setting it master.
-        awful.client.setslave(c)
-
+        -- but T32 is always the master
+        if (c.class == "T32marm64-qt") then
+            awful.client.setmaster(c)
+        else
+            awful.client.setslave(c)
+        end
         -- Put windows in a smart way, only if they does not set an initial position.
         if not c.size_hints.user_position and not c.size_hints.program_position then
             awful.placement.no_overlap(c)
