@@ -638,6 +638,8 @@ awful.rules.rules = {
        properties = { floating = true } },
     { rule = { class = "T32marm64-qt" },
        properties = { tag = tags[2][3] } },
+    { rule = { class = "SWT" },
+       properties = { tag = tags[1][3] } },
 }
 -- }}}
 
