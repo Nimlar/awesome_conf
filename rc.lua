@@ -645,13 +645,16 @@ client.connect_signal("manage", function (c, startup)
     -- Add a titlebar
     -- awful.titlebar.add(c, { modkey = modkey })
 --io.stderr:write("manage client name=" .. c.name .. " class=" .. c.class .. "\n")
-    -- Enable sloppy focus
+    -- Enable sloppy focus but for Thunderbird
+    if (c.class ~= "Thunderbird") then
         c:connect_signal("mouse::enter", function(c)
             if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
                 and awful.client.focus.filter(c) then
                 client.focus = c
             end
         end)
+    end
+
 
     if not startup then
         -- Set the windows at the slave,
