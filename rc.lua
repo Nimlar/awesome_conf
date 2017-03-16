@@ -43,7 +43,17 @@ do
 end
 -- }}}
 
-
+-- Override awesome.quit when we're using GNOME
+_awesome_quit = awesome.quit
+awesome.quit = function()
+    if os.getenv("DESKTOP_SESSION") == "awesome-gnome" then
+       os.execute("/usr/bin/gnome-session-quit") -- for Ubuntu 14.04
+       os.execute("pkill gnome-session") -- for Ubuntu 16.04
+       _awesome_quit()
+    else
+    _awesome_quit()
+    end
+end
 
 function dbg(vars)
 	local text = ""
@@ -223,20 +233,6 @@ mpdwidget:buttons(awful.util.table.join(
         vicious.force({ mpdwidget })
     end)
 ))
-
-
--- {{{ pidgin widget
-pidgin_status = widget({ type = "textbox" })
- pidgin_status.text = awful.util.pread("purple-remote \"getstatus\"")
- pidgin_timer = timer({ timeout = 30 })
- pidgin_timer:add_signal("timeout", function()
-     pidgin_status.text = awful.util.pread("purple-remote \"getstatus\"")
- end)
- pidgin_timer:start()
--- }}}
-
-
-
 
 
 -- Create a wibox for each screen and add it
@@ -629,7 +625,7 @@ awful.rules.rules = {
     { rule = { class = "Gimp" },
       properties = { floating = true } },
     -- Set browser to always map on tags number 9 of screen 1.
-    { rule_any = { class = {"Firefox", "Chromium-browser", "google-chrome", "google-chrome-beta" } },
+    { rule_any = { class = {"Firefox", "Chromium-browser", "Google-chrome", "google-chrome-beta" } },
        properties = { tag = tags[1][9] } },
     { rule_any = { class = {"Thunderbird", "Pidgin"} },
        properties = { tag = tags[2][9] } },
