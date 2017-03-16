@@ -124,10 +124,10 @@ end
               layouts[1], layouts[1], layouts[1], layouts[1] }
  },
 }
- for s = 1, screen.count() do
-     -- Each screen has its own tag table.
-     tags[s] = awful.tag(tags[s].names, s, tags[s].layout)
- end
+for s = 1, screen.count() do
+    -- Each screen has its own tag table.
+    tags[s] = awful.tag(tags[s].names, s, tags[s].layout)
+end
 -- }}}
 
 -- {{{ Menu
