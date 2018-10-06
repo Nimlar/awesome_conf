@@ -1,3 +1,6 @@
 [submodule "themes/awesome-solarized"]
 	path = themes/awesome-solarized
 	url = https://github.com/cycojesus/awesome-solarized.git
+[submodule "freedesktop"]
+	path = freedesktop
+	url = https://github.com/Nimlar/awesome-freedesktop.git
