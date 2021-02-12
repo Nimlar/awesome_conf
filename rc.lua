@@ -101,6 +101,21 @@ local function client_menu_toggle_fn()
 end
 -- }}}
 
+function dbg(vars)
+       local text = ""
+       if type(vars) == "table" then
+               for i=1, #vars do text = text .. vars[i] .. " | " end
+       elseif type(vars) == "string" then
+               text = vars
+       elseif type(vars) == "number" then
+               text = tostring(vars)
+    else
+        io.stderr:write(type(vars) .. "\n")
+       end
+       naughty.notify({ text = text, timeout = 0 })
+end
+
+
 -- {{{ Menu
 -- Create a launcher widget and a main menu
 myawesomemenu = {
