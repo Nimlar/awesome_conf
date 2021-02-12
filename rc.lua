@@ -10,6 +10,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
+
 -- Enable hotkeys help widget for VIM and other apps
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
@@ -17,6 +18,8 @@ require("awful.hotkeys_popup.keys")
 -- Load Debian menu entries
 local debian = require("debian.menu")
 local has_fdo, freedesktop = pcall(require, "freedesktop")
+
+local vicious = require("vicious")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -51,6 +54,8 @@ beautiful.init(gears.filesystem.get_dir("config") .. "themes/awesome-solarized/d
 terminal = "x-terminal-emulator"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = "gvim"
+
+local home   = os.getenv("HOME")
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -100,7 +105,7 @@ end
 -- Create a launcher widget and a main menu
 myawesomemenu = {
    { "hotkeys", function() return false, hotkeys_popup.show_help end},
-   { "manual", terminal .. " -e man awesome" },
+--   { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
    { "quit", function() awesome.quit() end}
@@ -139,6 +144,84 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 -- {{{ Wibar
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock()
+
+-- {{{ Reusable separator
+
+separator = wibox.widget.imagebox()
+separator:set_image("/usr/share/icons/hicolor/16x16/apps/gnome-panel-separator.png")
+
+spacer = wibox.widget.textbox()
+spacer.width = 3
+-- }}}
+
+---- {{{ File system usage
+--fsicon = wibox.widget.imagebox()
+--fsicon:set_image(beautiful.widget_fs)
+---- Initialize widgets
+--fs = {
+--  r = wibox.widget.progressbar(),
+--  l = wibox.widget.progressbar(),
+--  mh = wibox.widget.progressbar(),
+--}
+---- Progressbar properties
+--for _, w in pairs(fs) do
+--  w:set_vertical(true):set_ticks(true)
+--  w:set_height(16):set_width(5):set_ticks_size(2)
+--  w:set_border_color(beautiful.border_widget)
+--  w:set_background_color(beautiful.fg_off_widget)
+--  w:set_color({type = "linear", from ={0,0}, to = { 0 , 20}, stops = {  {0, "#AECF96"}, {0.5, "#88A175"}, {1, "#FF5656"} }
+----  beautiful.fg_widget,
+----     beautiful.fg_center_widget, beautiful.fg_end_widget
+--  })
+--  -- Register buttons
+----TODO  w.widget:buttons(gears.table.join(
+----    awful.button({ }, 1, function () awful.spawn("nautilus") end)
+----  ))
+--end -- Enable caching
+--vicious.cache(vicious.widgets.fs)
+---- Register widgets
+--vicious.register(fs.r,  vicious.widgets.fs, "${/ used_p}",            599)
+--vicious.register(fs.l,  vicious.widgets.fs, "${/local used_p}", 599)
+--vicious.register(fs.mh, vicious.widgets.fs, "${/media/home used_p}", 599)
+---- }}}
+
+
+-- mpd widget
+-- Initialize widget
+mpdwidget = wibox.widget.textbox()
+-- Register widget
+vicious.register(mpdwidget, vicious.widgets.mpd,
+    function (widget, args)
+        if args["{state}"] == "Stop" then
+            return " - "
+        else
+            return args["{Artist}"]..' - '.. args["{Title}"]
+        end
+    end, 10)
+mpdwidget:buttons(gears.table.join(
+    awful.button({ }, 1, function()
+        awful.spawn("mpc seek -00:00:10")
+        vicious.force({ mpdwidget })
+    end),
+    awful.button({ }, 3, function()
+        awful.spawn("mpc seek +00:00:10")
+        vicious.force({ mpdwidget })
+    end),
+    awful.button({ }, 2, function()
+        awful.spawn("mpc toggle")
+        vicious.force({ mpdwidget })
+    end),
+
+    awful.button({ }, 4, function()
+        awful.spawn("mpc volume +5")
+        vicious.force({ mpdwidget })
+    end),
+    awful.button({ }, 5, function()
+        awful.spawn("mpc volume -5")
+        vicious.force({ mpdwidget })
+    end)
+))
+
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
@@ -237,6 +320,8 @@ awful.screen.connect_for_each_screen(function(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             mykeyboardlayout,
+--            mpdwidget,
+--            separator,
             wibox.widget.systray(),
             mytextclock,
             s.mylayoutbox,
@@ -255,7 +340,7 @@ root.buttons(gears.table.join(
 
 -- {{{ Key bindings
 globalkeys = gears.table.join(
-    awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
+    awful.key({ modkey,           }, "F1",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
     awful.key({ modkey,           }, "Up", function ()  awful.screen.focus_relative( 1) end,
               {description = "Focus next screen", group = "tag"}),
@@ -355,7 +440,10 @@ globalkeys = gears.table.join(
               {description = "lua execute prompt", group = "awesome"}),
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
-              {description = "show the menubar", group = "launcher"})
+              {description = "show the menubar", group = "launcher"}),
+    -- Lock
+    awful.key({ altkey, "Control"  }, "l", function() awful.spawn("xautolock -locknow") end,
+              {description = "Lock screen (and pause music)", group = "awesome"})
 )
 
 clientkeys = gears.table.join(
@@ -371,9 +459,6 @@ clientkeys = gears.table.join(
               {description = "toggle floating", group = "client"}),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
               {description = "move to master", group = "client"}),
---    awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
---              {description = "move to screen", group = "client"}),
--- replace by 'Mod+CTRL+Up'
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
               {description = "toggle keep on top", group = "client"}),
     awful.key({ modkey,           }, "n",
@@ -401,9 +486,10 @@ clientkeys = gears.table.join(
             c:raise()
         end ,
         {description = "(un)maximize horizontally", group = "client"}),
-  awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
-            {description = "move to screen", group = "client"}),
-    awful.key({ modkey, "Control" }, "Up" ,   function(c) c:move_to_screen() end, 
+--    awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
+--              {description = "move to screen", group = "client"}),
+-- replace by 'Mod+CTRL+Up'
+    awful.key({ modkey, "Control" }, "Up" ,   function(c) c:move_to_screen() end,
               {description = "move to next screen", group = "client"}),
     awful.key({ modkey, "Control" }, "Down" , function(c) c:movetoscreen(c.screen.index-1) end,
               {description = "move to next screen", group = "client"}),
@@ -422,7 +508,7 @@ clientkeys = gears.table.join(
                 c:move_to_tag(newtag)
                 newtag:view_only()
             end
-        end, 
+        end,
         {description = "move client to prev tag", group = "client"}),
     awful.key({ modkey, "Control" }, "Right",
        function (c)
@@ -548,12 +634,12 @@ awful.rules.rules = {
 
     -- Add titlebars to normal clients and dialogs
     { rule_any = {type = { "normal", "dialog" }
-      }, properties = { titlebars_enabled = true }
+      }, properties = { titlebars_enabled = false }
     },
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
     -- { rule = { class = "Firefox" },
-    --   properties = { screen = 1, tag = "2" } },
+--       properties = { screen = 1, tag = "9" } },
 }
 -- }}}
 
@@ -562,7 +648,7 @@ awful.rules.rules = {
 client.connect_signal("manage", function (c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
-    -- if not awesome.startup then awful.client.setslave(c) end
+    if not awesome.startup then awful.client.setslave(c) end
 
     if awesome.startup and
       not c.size_hints.user_position
@@ -614,9 +700,17 @@ client.connect_signal("request::titlebars", function(c)
     }
 end)
 
+-- screensave start
+-- xautolock -time 1
+--     -locker '/usr/bin/i3lock -c 000000 -e'
+--     -notify 10 -notifier 'notify-send --urgency=critical --icon="/usr/share/icons/gnome/48x48/actions/gnome-lockscreen.png"  --expire-time 1000 -- "Screen saver will start"'
+--
+
+
 -- Enable sloppy focus, so that focus follows mouse.
 client.connect_signal("mouse::enter", function(c)
-    if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+    if c.class ~= "Thunderbird"
+        and awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
         and awful.client.focus.filter(c) then
         client.focus = c
     end
