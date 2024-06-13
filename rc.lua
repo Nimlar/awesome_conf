@@ -163,7 +163,7 @@ mytextclock = wibox.widget.textclock()
 -- {{{ Reusable separator
 
 separator = wibox.widget.imagebox()
-separator:set_image("/usr/share/icons/hicolor/16x16/apps/gnome-panel-separator.png")
+separator:set_image("/usr/share/icons/hicolor/16x16/apps/mate-panel-separator.png")
 
 spacer = wibox.widget.textbox()
 spacer.width = 3
@@ -210,9 +210,10 @@ vicious.register(mpdwidget, vicious.widgets.mpd,
         if args["{state}"] == "Stop" then
             return " - "
         else
-            return args["{Artist}"]..' - '.. args["{Title}"]
+            return " 𝅘𝅥𝅮   "..args["{Artist}"]..' - '.. args["{Title}"].." 𝅘𝅥𝅮   "
         end
     end, 10)
+-- buton actions
 mpdwidget:buttons(gears.table.join(
     awful.button({ }, 1, function()
         awful.spawn("mpc seek -00:00:10")
@@ -335,8 +336,9 @@ awful.screen.connect_for_each_screen(function(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             mykeyboardlayout,
---            mpdwidget,
---            separator,
+            spacer,
+            mpdwidget,
+            spacer,
             wibox.widget.systray(),
             mytextclock,
             s.mylayoutbox,
@@ -457,7 +459,9 @@ globalkeys = gears.table.join(
     awful.key({ modkey }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"}),
     -- Lock
-    awful.key({ altkey, "Control"  }, "l", function() awful.spawn("xautolock -locknow") end,
+    awful.key({ altkey, "Control"  }, "l",
+        function()
+            awful.spawn("xautolock -locknow")
               {description = "Lock screen (and pause music)", group = "awesome"})
 )
 
